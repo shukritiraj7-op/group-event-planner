@@ -109,11 +109,11 @@ export function BottomNav() {
   );
 }
 
-export function Fab({ to, search, label = "Add booking" }: { to: LinkProps["to"]; search?: Record<string, string>; label?: string }) {
+export function Fab({ date, label = "Add booking" }: { date?: string; label?: string }) {
   return (
     <Link
-      to={to}
-      search={search}
+      to="/booking/new"
+      search={date ? { date } : {}}
       aria-label={label}
       className="fixed bottom-[calc(88px+env(safe-area-inset-bottom))] right-4 z-40 grid h-14 w-14 place-items-center rounded-full bg-gradient-primary text-primary-foreground shadow-glow-lg transition active:scale-95 sm:right-[calc(50%-240px+16px)]"
     >
