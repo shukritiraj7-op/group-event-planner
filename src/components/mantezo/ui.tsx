@@ -284,7 +284,7 @@ export function TagChip({ icon, label, subLabel }: { icon: string; label: string
   );
 }
 
-export function ListRow({ icon, title, subtitle, to, right, onClick }: { icon: LucideIcon; title: ReactNode; subtitle?: ReactNode; to?: LinkProps["to"]; right?: ReactNode; onClick?: () => void }) {
+export function ListRow({ icon, title, subtitle, to, right, onClick }: { icon: LucideIcon; title: ReactNode; subtitle?: ReactNode; to?: LinkProps["to"] | undefined; right?: ReactNode; onClick?: (() => void) | undefined }) {
   const inner = (
     <>
       <IconBadge icon={icon} />
@@ -302,7 +302,7 @@ export function ListRow({ icon, title, subtitle, to, right, onClick }: { icon: L
 
 /* ---------- Form ---------- */
 
-export function Field({ label, required, icon: Icon, error, hint, ...rest }: { label: string; required?: boolean; icon?: LucideIcon; error?: string; hint?: string } & InputHTMLAttributes<HTMLInputElement>) {
+export function Field({ label, required, icon: Icon, error, hint, ...rest }: { label: string; required?: boolean; icon?: LucideIcon; error?: string | undefined; hint?: string | undefined } & InputHTMLAttributes<HTMLInputElement>) {
   return (
     <label className="block">
       <span className="mb-1.5 block text-[13px] font-medium text-foreground/90">
