@@ -12,6 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as BookingNewRouteImport } from './routes/booking.new'
+import { Route as DayDateRouteImport } from './routes/day.$date'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,35 +30,53 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BookingNewRoute = BookingNewRouteImport.update({
+  id: '/booking/new',
+  path: '/booking/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DayDateRoute = DayDateRouteImport.update({
+  id: '/day/$date',
+  path: '/day/$date',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
+  '/booking/new': typeof BookingNewRoute
+  '/day/$date': typeof DayDateRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
+  '/booking/new': typeof BookingNewRoute
+  '/day/$date': typeof DayDateRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
+  '/booking/new': typeof BookingNewRoute
+  '/day/$date': typeof DayDateRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/home' | '/login'
+  fullPaths: '/' | '/home' | '/login' | '/booking/new' | '/day/$date'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/home' | '/login'
-  id: '__root__' | '/' | '/home' | '/login'
+  to: '/' | '/home' | '/login' | '/booking/new' | '/day/$date'
+  id: '__root__' | '/' | '/home' | '/login' | '/booking/new' | '/day/$date'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   HomeRoute: typeof HomeRoute
   LoginRoute: typeof LoginRoute
+  BookingNewRoute: typeof BookingNewRoute
+  DayDateRoute: typeof DayDateRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -82,6 +102,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/booking/new': {
+      id: '/booking/new'
+      path: '/booking/new'
+      fullPath: '/booking/new'
+      preLoaderRoute: typeof BookingNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/day/$date': {
+      id: '/day/$date'
+      path: '/day/$date'
+      fullPath: '/day/$date'
+      preLoaderRoute: typeof DayDateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -89,6 +123,8 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   HomeRoute: HomeRoute,
   LoginRoute: LoginRoute,
+  BookingNewRoute: BookingNewRoute,
+  DayDateRoute: DayDateRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
