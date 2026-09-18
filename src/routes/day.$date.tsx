@@ -190,7 +190,7 @@ function BookingDay({ id }: { id: string }) {
           </div>
           <div className="mt-3 flex justify-between text-[13px]">
             <div>
-              <p className="text-muted-foreground">Spent</p>
+              <p className="text-muted-foreground">Advance Paid</p>
               <p className="text-[15px] font-semibold">{inr(b.budgetSpent)}</p>
             </div>
             <div className="text-right">

@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { seedBookings, seedNotifications, seedTasks, team } from "./data";
-import type { Booking, Notification, Task, TeamMember } from "./types";
+import { savedVenues, seedBookings, seedNotifications, seedTasks, team } from "./data";
+import type { Booking, Notification, SavedVenue, Task, TeamMember } from "./types";
 
 const KEY = "mantezo-store-v1";
 
@@ -8,19 +8,21 @@ interface State {
   bookings: Booking[];
   tasks: Task[];
   notifications: Notification[];
+  venues: SavedVenue[];
 }
 
 interface Store extends State {
   team: TeamMember[];
   hydrated: boolean;
   addBooking: (b: Omit<Booking, "id">) => Booking;
+  addVenue: (v: Omit<SavedVenue, "id">) => void;
   toggleTask: (id: string) => void;
   markAllRead: () => void;
 }
 
 const Ctx = createContext<Store | null>(null);
 
-const initial: State = { bookings: seedBookings, tasks: seedTasks, notifications: seedNotifications };
+const initial: State = { bookings: seedBookings, tasks: seedTasks, notifications: seedNotifications, venues: savedVenues };
 
 export function StoreProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<State>(initial);
@@ -29,7 +31,14 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     try {
       const raw = window.localStorage.getItem(KEY);
-      if (raw) setState({ ...initial, ...(JSON.parse(raw) as State) });
+      if (raw) {
+        const parsed = JSON.parse(raw) as Partial<State>;
+        setState({
+          ...initial,
+          ...parsed,
+          venues: parsed.venues && parsed.venues.length > 0 ? parsed.venues : savedVenues,
+        });
+      }
     } catch {
       /* ignore */
     }
@@ -40,23 +49,61 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     if (hydrated) window.localStorage.setItem(KEY, JSON.stringify(state));
   }, [state, hydrated]);
 
+  const addVenue = useCallback((v: Omit<SavedVenue, "id">) => {
+    setState((s) => {
+      const exists = s.venues.some(
+        (x) => x.name.toLowerCase() === v.name.toLowerCase() || (v.address && x.address.toLowerCase() === v.address.toLowerCase())
+      );
+      if (exists) return s;
+      return {
+        ...s,
+        venues: [...s.venues, { ...v, id: "v" + Date.now() }],
+      };
+    });
+  }, []);
+
   const addBooking = useCallback((b: Omit<Booking, "id">) => {
     const booking: Booking = { ...b, id: "b" + Date.now() };
-    setState((s) => ({
-      ...s,
-      bookings: [...s.bookings, booking],
-      notifications: [
-        {
-          id: "n" + Date.now(),
-          type: "booking_assigned",
-          title: "New booking added",
-          description: `${booking.title} for ${booking.clientName} was added by Aryan.`,
-          time: "Just now",
-          read: false,
-        },
-        ...s.notifications,
-      ],
-    }));
+    setState((s) => {
+      const vName = booking.venueName?.trim();
+      const vAddress = booking.venueAddress?.trim() || vName;
+      const vCity = booking.venueCity?.trim() || "";
+
+      let updatedVenues = s.venues;
+      if (vName) {
+        const exists = s.venues.some(
+          (x) => x.name.toLowerCase() === vName.toLowerCase() || (vAddress && x.address.toLowerCase() === vAddress.toLowerCase())
+        );
+        if (!exists) {
+          updatedVenues = [
+            ...s.venues,
+            {
+              id: "v" + Date.now(),
+              name: vName,
+              city: vCity || "Local",
+              address: vAddress,
+            },
+          ];
+        }
+      }
+
+      return {
+        ...s,
+        bookings: [...s.bookings, booking],
+        venues: updatedVenues,
+        notifications: [
+          {
+            id: "n" + Date.now(),
+            type: "booking_assigned",
+            title: "New booking added",
+            description: `${booking.title} for ${booking.clientName} was added by Aryan.`,
+            time: "Just now",
+            read: false,
+          },
+          ...s.notifications,
+        ],
+      };
+    });
     return booking;
   }, []);
 
@@ -69,8 +116,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo<Store>(
-    () => ({ ...state, team, hydrated, addBooking, toggleTask, markAllRead }),
-    [state, hydrated, addBooking, toggleTask, markAllRead],
+    () => ({ ...state, team, hydrated, addBooking, addVenue, toggleTask, markAllRead }),
+    [state, hydrated, addBooking, addVenue, toggleTask, markAllRead],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

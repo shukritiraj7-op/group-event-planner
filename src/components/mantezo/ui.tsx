@@ -154,10 +154,24 @@ export function StatusDot({ kind, className }: { kind: "live" | "online" | "offl
   return <span aria-hidden className={cn("inline-block h-2 w-2 shrink-0 rounded-full", c, className)} />;
 }
 
-export function Avatar({ member, size = 36, className }: { member: TeamMember; size?: number; className?: string }) {
+export function Avatar({ member, size = 36, className, showLogo }: { member: TeamMember; size?: number; className?: string; showLogo?: boolean }) {
+  if (showLogo || member?.isCurrentUser) {
+    return (
+      <span
+        className={cn("grid shrink-0 place-items-center rounded-full ring-2 ring-elevated overflow-hidden bg-elevated/80 border border-border/50 shadow-sm", className)}
+        style={{
+          width: size,
+          height: size,
+        }}
+        aria-label={member?.name || "User Profile"}
+      >
+        <img src="/logo.png" alt={member?.name || "Logo"} className="h-full w-full object-cover" />
+      </span>
+    );
+  }
   return (
     <span
-      className={cn("grid shrink-0 place-items-center rounded-full font-heading font-semibold text-primary-foreground ring-2 ring-elevated", className)}
+      className={cn("grid shrink-0 place-items-center rounded-full font-heading font-semibold text-primary-foreground ring-2 ring-elevated overflow-hidden", className)}
       style={{
         width: size,
         height: size,
@@ -272,7 +286,7 @@ export function Chip({ active, children, className, ...rest }: { active?: boolea
   );
 }
 
-export function TagChip({ icon, label, subLabel }: { icon: string; label: string; subLabel?: string }) {
+export function TagChip({ icon, label, subLabel }: { icon: string; label: string; subLabel?: string | undefined }) {
   return (
     <div className="flex shrink-0 items-center gap-2.5 rounded-full border border-border bg-elevated-2/60 py-2 pl-2 pr-4">
       <span className="grid h-9 w-9 place-items-center rounded-full bg-badge text-base">{icon}</span>

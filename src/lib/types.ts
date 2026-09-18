@@ -62,3 +62,11 @@ export interface Notification {
   time: string;
   read: boolean;
 }
+
+export interface SavedVenue {
+  id?: string;
+  name: string;
+  city: string;
+  address: string;
+}
+

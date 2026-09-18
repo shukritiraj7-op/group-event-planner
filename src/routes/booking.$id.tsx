@@ -86,13 +86,22 @@ function BookingDetailPage() {
         </Card>
 
         <Card>
-          <CardHeader icon={Wallet} title="Budget" />
+          <CardHeader icon={Wallet} title="Budget Summary" />
           <div className="mb-2 flex items-end justify-between">
-            <span className="font-heading text-[22px] font-bold">{inr(b.budgetSpent)}</span>
-            <span className="text-[13px] text-muted-foreground">of {inr(b.budgetTotal)}</span>
+            <div>
+              <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Advance Paid</p>
+              <span className="font-heading text-[22px] font-bold text-foreground">{inr(b.budgetSpent)}</span>
+            </div>
+            <div className="text-right">
+              <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Total Budget</p>
+              <span className="text-[15px] font-semibold text-link">{inr(b.budgetTotal)}</span>
+            </div>
           </div>
           <ProgressBar value={spentPct} />
-          <p className="mt-2 text-[12px] text-muted-foreground">{Math.round(spentPct)}% spent · {inr(Math.max(0, b.budgetTotal - b.budgetSpent))} remaining</p>
+          <div className="mt-2.5 flex items-center justify-between text-[12px] text-muted-foreground">
+            <span>{Math.round(spentPct)}% paid</span>
+            <span className="font-semibold text-foreground">{inr(Math.max(0, b.budgetTotal - b.budgetSpent))} remaining balance</span>
+          </div>
         </Card>
 
         {b.specialDemands.length > 0 && (
